@@ -72,3 +72,68 @@ model VerificationToken {
 
     @@unique([identifier, token])
 }
+
+enum Status {
+    PENDENTE
+    APROVADA
+    REPROVADA
+}
+
+model Cliente {
+    id          Int      @id @default(autoincrement())
+    name        String
+    idade       Int
+    renda       Float
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    
+    solicitacoesCredito SolicitacaoCredito[]
+
+    @@index([name])
+}
+
+model ModalidadeCredito {
+    id                 Int      @id @default(autoincrement())
+    name               String
+    idadeMin           Int
+    idadeMax           Int
+    rendaMin           Float
+    rendaMax           Float
+    taxaJuros          Float
+    tipoJuros          String
+    taxaAdm            Float
+    prazoAnos          Int
+    createdAt          DateTime @default(now())
+    updatedAt          DateTime @updatedAt
+    
+    solicitacoesCredito SolicitacaoCredito[]
+
+    @@index([name])
+}
+
+model LinhaFinanciamento {
+    id                  Int      @id @default(autoincrement())
+    name                String
+    permiteConsorcio    Boolean
+    
+    solicitacoesCredito SolicitacaoCredito[]
+
+    @@index([name])
+}
+
+model SolicitacaoCredito {
+    id                   Int      @id @default(autoincrement())
+    clienteId            Int
+    modalidadeCreditoId  Int
+    linhaFinanciamentoId Int
+    status               Status
+    dataSolicitacao      DateTime @default(now())
+    createdAt            DateTime @default(now())
+    updatedAt            DateTime @updatedAt
+
+    cliente             Cliente             @relation(fields: [clienteId], references: [id])
+    modalidadeCredito   ModalidadeCredito   @relation(fields: [modalidadeCreditoId], references: [id])
+    linhaFinanciamento  LinhaFinanciamento  @relation(fields: [linhaFinanciamentoId], references: [id])
+
+    //@@index([valorSolicitado])
+}
